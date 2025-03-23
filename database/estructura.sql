@@ -154,8 +154,8 @@ CREATE TABLE `invitaciones_discord` (
   `code` varchar(255) NOT NULL,
   `uses` int(11) NOT NULL,
   `inviterId` varchar(255) DEFAULT NULL,
-  `created_at` date NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -523,7 +523,7 @@ ALTER TABLE `verificados`
 --
 ALTER TABLE `votos`
   ADD PRIMARY KEY (`voto_id`),
-  ADD UNIQUE KEY `encuesta_id` (`encuesta_id`,`usuario_id`),
+  ADD UNIQUE KEY `encuesta_id` (`encuesta_id`, `usuario_id`(191)),
   ADD KEY `opcion_id` (`opcion_id`);
 
 --
