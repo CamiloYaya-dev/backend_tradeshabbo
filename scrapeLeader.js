@@ -77,9 +77,11 @@ async function scrapeMembers(parametro) {
         } catch (error) {
             console.error('Timeout alcanzado, capturando la página como está...');
         }
-    
+        
+    } else if (parametro === 'habbo') {
+        await updateHabboData();
     }
-
+    //await page.close();
     await browser.disconnect(); // Desconectar el navegador al finalizar
     if(parametro === "!nivelgremio"){
         return nivelGremio;
@@ -91,6 +93,39 @@ async function scrapeMembers(parametro) {
         } else {
             return false;
         }
+    }
+}
+
+async function fetchCheckinCount(url, query) {
+    const browser = await puppeteer.connect({
+        browserURL: 'http://127.0.0.1:9222',
+        headless: true, // Cambia a true si no necesitas la interfaz gráfica
+        args: ['--start-minimized'] // Esto intentará iniciar el navegador minimizado
+    });
+    const page = await browser.newPage();
+    try {
+        await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
+        const html = await page.content();
+        const $ = cheerio.load(html);
+        const checkinCount = $('.habbo__origins__checkin__count.ng-binding').text().trim();
+        await pool.execute(query, [checkinCount]);
+    } catch (error) {
+        console.error(`Error al cargar la página ${url}:`, error);
+    } finally {
+        await page.close();
+    }
+}
+
+async function updateHabboData() {
+    console.log("entre");
+    const urls = [
+        { url: 'https://origins.habbo.es/', query: 'UPDATE config SET habbo_es = ?' },
+        { url: 'https://origins.habbo.com.br/', query: 'UPDATE config SET habbo_br = ?' },
+        { url: 'https://origins.habbo.com/', query: 'UPDATE config SET habbo_com = ?' }
+    ];
+
+    for (const { url, query } of urls) {
+        await fetchCheckinCount(url, query);
     }
 }
 

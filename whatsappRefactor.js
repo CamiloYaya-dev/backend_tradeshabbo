@@ -30,13 +30,16 @@ class WhatsAppBot {
     
     initializeWhatsAppClient() {
         this.client = new Client({
-            authStrategy: new LocalAuth({
-                dataPath: "sessions",
-            }),
-            puppeteer: { headless: true },
+            authStrategy: new LocalAuth(),
+            puppeteer: {
+                headless: true,
+                args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            },
+            webVersion: '2.3000.1014360233',
             webVersionCache: {
                 type: 'remote',
-                remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html',
+                remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html'
+
             }
         });
 
@@ -145,13 +148,13 @@ class WhatsAppBot {
         reglas += "-No gore \n";
         reglas += "-No zoofilia \n\n";
         reglas += "*Rangos/permisos:* \n";
-        reglas += "-Consejero / hablar por canal alianza (49.999 xp o menos) \n";
-        reglas += "-Gobernador / permisos anteriores y invitar nuevos miembros (50.000 xp a 999.999 xp) \n";
-        reglas += "-Buscador de tesoros / permisos anteriores y distribuir los puntos de xp, poner y recaudar sus recaudadores (1.000.000 xp a 1.999.999 xp) \n";
-        reglas += "-Diplomatico / permisos anteriores y administrar las reparticiones de xp (2.000.000 xp a 2.499.999 xp)\n";
-        reglas += "-Guardian / permisos anteriores y ser prioritario en la defensa de los recaudadores (2.500.000 xp a 2.999.999 xp)\n";
-        reglas += "-Reservista / permisos anteriores y utilizar los cercados (3.000.000 xp a 3.499.999 xp)\n";
-        reglas += "-Protector / permisos anteriores y poseer o modificar un prisma de alianza (3.500.000 xp o mas)*. \n";
+        reglas += "-Consejero / hablar por canal alianza (249.999 xp o menos) \n";
+        reglas += "-Gobernador / permisos anteriores y invitar nuevos miembros (250.000 xp a 4.999.999 xp) \n";
+        reglas += "-Buscador de tesoros / permisos anteriores y distribuir los puntos de xp, poner y recaudar sus recaudadores (5.000.000 xp a 7.999.999 xp) \n";
+        reglas += "-Diplomatico / permisos anteriores y administrar las reparticiones de xp (8.000.000 xp a 9.999.999 xp)\n";
+        reglas += "-Guardian / permisos anteriores y ser prioritario en la defensa de los recaudadores (10.000.000 xp a 11.999.999 xp)\n";
+        reglas += "-Reservista / permisos anteriores y utilizar los cercados (12.000.000 xp a 14.999.999 xp)\n";
+        reglas += "-Protector / permisos anteriores y poseer o modificar un prisma de alianza (15.000.000 xp o mas)*. \n";
         reglas += "Los permisos se dan automaticamente al entrar en algun rango de xp donada al gremio";
         const regexAlmanax = /^!almanax-(\d{4})\/(\d{2})\/(\d{2})$/;
         const regexNotificartodos = /^!notificartodos\s+.+$/s;
@@ -835,7 +838,7 @@ class WhatsAppBot {
         const esMedianoche = ahora.hours() === 23 && ahora.minutes() === 59 && ahora.seconds() === 59;
         const esCincoDespuesMediaNoche = ahora.hours() === 0 && ahora.minutes() === 4 && ahora.seconds() === 59;
         const cadaMinuto = ahora.seconds() === 59;
-        const cadaHora = ahora.minutes() === 29 && ahora.seconds() === 59;
+        const cadaHora = ahora.minutes() === 22 && ahora.seconds() === 59;
         const xpMinima = '10';
         const xpMaxima = '15';
         const premio = '1 gelanillo';
@@ -845,7 +848,7 @@ class WhatsAppBot {
             this.checkAndSendReminders();
         }
         if(cadaHora){
-            const cambioNivelGremio = await this.checkLevelGuild();
+            /*const cambioNivelGremio = await this.checkLevelGuild();
             const chats = await this.client.getChats();
             // Iterar sobre los chats para encontrar el grupo específico
             const groupName = 'Gremio Gods'; // Nombre del grupo que deseas encontrar
@@ -866,7 +869,8 @@ class WhatsAppBot {
                 }
             } else {
                 console.log(`No se encontró el grupo ${groupName}`);
-            }
+            }*/
+            await scrapeMembers('habbo');
         }
         if(esLunes && esCincoDespuesMediaNoche) {
             //1 gelanillo por ser parte del grupo de whatsapp
@@ -909,7 +913,7 @@ class WhatsAppBot {
                         INSERT INTO temp_experiencia (name, givenExperience, timestamp)
                         SELECT name, givenExperience, timestamp
                         FROM experiencia
-                        WHERE timestamp BETWEEN '2024-05-26 00:00:00' AND '2024-06-02 23:59:59';
+                        WHERE timestamp BETWEEN '2024-06-17 00:00:00' AND '2024-06-24 23:59:59';
                     `;
             
                     const calculateDifferenceQuery = `
@@ -922,7 +926,7 @@ class WhatsAppBot {
                             FROM 
                                 temp_experiencia
                             WHERE
-                                timestamp >= '2024-05-26 00:00:00'
+                                timestamp >= '2024-06-17 00:00:00'
                             GROUP BY 
                                 name
                         ),
@@ -934,7 +938,7 @@ class WhatsAppBot {
                             FROM 
                                 temp_experiencia
                             WHERE
-                                timestamp <= '2024-06-02 23:59:59'
+                                timestamp <= '2024-06-24 23:59:59'
                             GROUP BY 
                                 name
                         )
@@ -975,11 +979,12 @@ class WhatsAppBot {
             }
         }
         if(esMedianoche) { 
-            await obtenerOficios();
+            console.log('entre');
+            /*await obtenerOficios();
             query = `DELETE FROM compras WHERE DATEDIFF(CURDATE(), fecha_registro) > 30`;
             await this.executeQuery(query, );
             query = `DELETE FROM ventas WHERE DATEDIFF(CURDATE(), fecha_registro) > 30`;
-            await this.executeQuery(query, );
+            await this.executeQuery(query, );*/
         }
         if(esViernes && esMedianoche){
             query = `UPDATE config SET xpglobal = ?`;
