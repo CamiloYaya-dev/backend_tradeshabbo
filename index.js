@@ -775,7 +775,61 @@ app.post('/update-password', async (req, res) => {
     }
 });
 
-const port = 3000;
+app.get('/obtener-placas', async (req, res) => {
+    try {
+        const db = await getDatabaseConnection();
+
+        const [placas] = await db.query('SELECT * FROM placas');
+
+        res.status(200).json(placas);
+    } catch (error) {
+        console.error('Error al obtener placas:', error);
+        res.status(500).json({
+            error: "No se pudieron obtener las placas."
+        });
+    }
+});
+
+app.get('/obtener-premios', async (req, res) => {
+    try {
+        const db = await getDatabaseConnection();
+
+        const [premios] = await db.query(`
+            SELECT
+                p.*,
+                c.name AS furni_name
+            FROM origins_premios p
+            JOIN catalogo c ON p.furni = c.id
+        `);
+
+        res.status(200).json(premios);
+    } catch (error) {
+        console.error('Error al obtener premios:', error);
+        res.status(500).json({
+            error: "No se pudieron obtener los premios."
+        });
+    }
+});
+
+app.get('/obtener-eventos', async (req, res) => {
+    try {
+        const db = await getDatabaseConnection();
+
+        const [eventos] = await db.query(`
+            SELECT * FROM eventos
+            ORDER BY created_at DESC
+        `);
+
+        res.status(200).json(eventos);
+    } catch (error) {
+        console.error('Error al obtener eventos:', error);
+        res.status(500).json({
+            error: "No se pudieron obtener los eventos."
+        });
+    }
+});
+
+const port = 3001;
 app.listen(port, () => {
     console.log(`Servidor corriendo en http://localhost:${port}`);
 });
